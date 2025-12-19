@@ -41,7 +41,10 @@ class Wheel {
         
         this.id = id;
         this.container = container;
-        this.options = ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
+        // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
+        this.options = id === 0 
+            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8']
+            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
         this.currentRotation = 0;
         this.isSpinning = false;
         this.selectedPrizeIndex = null;
@@ -314,6 +317,11 @@ class Wheel {
         // Fechar overlay se estiver aberto
         this.closePrizeOverlay();
         
+        // Tocar som de roleta
+        if (window.playWheelSound) {
+            window.playWheelSound();
+        }
+        
         const numOptions = this.options.length;
         const anglePerSection = 360 / numOptions;
         const spins = 5 + Math.random() * 5;
@@ -335,6 +343,11 @@ class Wheel {
             this.isSpinning = false;
             this.wheelFrameElement.style.cursor = 'pointer';
             
+            // Parar som da roleta quando a animação terminar
+            if (window.stopWheelSound) {
+                window.stopWheelSound();
+            }
+            
             const selectedPrize = this.options[selectedIndex];
             this.selectedPrizeIndex = selectedIndex; // Armazenar o índice do prêmio selecionado
             this.triggerConfetti();
@@ -348,6 +361,11 @@ class Wheel {
     
     triggerConfetti() {
         if (typeof confetti === 'undefined') return;
+        
+        // Tocar som de comemoração
+        if (window.playCelebrationSound) {
+            window.playCelebrationSound();
+        }
         
         const rect = this.wheelContainerElement.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
@@ -411,14 +429,19 @@ class Wheel {
     }
     
     updateOptions(newOptions) {
-        this.options = newOptions.length > 0 ? newOptions : ['Prêmio 1'];
+        // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
+        const defaultOption = this.id === 0 ? 'Ganhador 1' : 'Prêmio 1';
+        this.options = newOptions.length > 0 ? newOptions : [defaultOption];
         this.createWheel();
     }
     
     reset() {
         this.isSpinning = false;
         this.currentRotation = 0;
-        this.options = ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
+        // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
+        this.options = this.id === 0
+            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8']
+            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
         this.wheelFrameElement.style.cursor = 'pointer';
         this.wheelInnerElement.style.transition = 'none';
         this.wheelInnerElement.style.transform = 'rotate(0deg)';
@@ -449,7 +472,8 @@ class Wheel {
         
         const title = document.createElement('h2');
         title.className = 'prize-overlay-title';
-        title.textContent = 'Prêmio Selecionado!';
+        // Ambas as roletas mostram "GANHADOR!"
+        title.textContent = 'GANHADOR!';
         
         const prizeName = document.createElement('div');
         prizeName.className = 'prize-overlay-prize';
@@ -519,7 +543,9 @@ class Wheel {
         
         // Se não houver mais opções, adicionar uma opção padrão
         if (this.options.length === 0) {
-            this.options = ['Prêmio Final'];
+            // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
+            const finalOption = this.id === 0 ? 'Ganhador Final' : 'Prêmio Final';
+            this.options = [finalOption];
         }
         
         // Fechar overlay

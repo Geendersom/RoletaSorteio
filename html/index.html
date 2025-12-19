@@ -5,7 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spin the Wheel - Roleta Interativa</title>
+    <title>Roleta Cassino</title>
+    <link rel="icon" type="image/png" href="../assets/icone.png">
     <link rel="stylesheet" href="../css/styles.css">
     <!-- Biblioteca para efeito de confetes -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -33,6 +34,19 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+
+    <!-- Botão de Som -->
+    <button class="sound-button" id="soundButton" aria-label="Ativar/desativar som">
+        <svg id="soundIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <svg id="soundIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
         </svg>
     </button>
 
@@ -83,6 +97,91 @@
             const modalBody = document.getElementById('modalBody');
             const addWheelButton = document.getElementById('addWheelButton');
             const refreshButton = document.getElementById('refreshButton');
+            const soundButton = document.getElementById('soundButton');
+            const soundIconOn = document.getElementById('soundIconOn');
+            const soundIconOff = document.getElementById('soundIconOff');
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // SISTEMA DE SONS
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            let soundEnabled = true; // Sons habilitados por padrão
+            
+            // Criar elementos de áudio
+            const backgroundMusic = new Audio('../sounds/trilha.mp3');
+            backgroundMusic.loop = true;
+            backgroundMusic.volume = 0.25;
+            
+            const wheelSound = new Audio('../sounds/roleta.mp3');
+            wheelSound.volume = 0.5;
+            
+            const celebrationSound = new Audio('../sounds/comemoracao.mp3');
+            celebrationSound.volume = 0.8;
+            
+            // Função para iniciar trilha de fundo
+            function startBackgroundMusic() {
+                if (soundEnabled && backgroundMusic.paused) {
+                    backgroundMusic.play().catch(err => {
+                        console.log('Erro ao reproduzir trilha:', err);
+                    });
+                }
+            }
+            
+            // Função para parar trilha de fundo
+            function stopBackgroundMusic() {
+                backgroundMusic.pause();
+                backgroundMusic.currentTime = 0;
+            }
+            
+            // Função para tocar som de roleta
+            function playWheelSound() {
+                if (soundEnabled) {
+                    wheelSound.currentTime = 0;
+                    wheelSound.play().catch(err => {
+                        console.log('Erro ao reproduzir som de roleta:', err);
+                    });
+                }
+            }
+            
+            // Função para parar som de roleta
+            function stopWheelSound() {
+                wheelSound.pause();
+                wheelSound.currentTime = 0;
+            }
+            
+            // Função para tocar som de comemoração
+            function playCelebrationSound() {
+                if (soundEnabled) {
+                    celebrationSound.currentTime = 0;
+                    celebrationSound.play().catch(err => {
+                        console.log('Erro ao reproduzir som de comemoração:', err);
+                    });
+                }
+            }
+            
+            // Toggle de som
+            soundButton.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                
+                if (soundEnabled) {
+                    soundButton.classList.remove('disabled');
+                    soundIconOn.style.display = 'block';
+                    soundIconOff.style.display = 'none';
+                    startBackgroundMusic();
+                } else {
+                    soundButton.classList.add('disabled');
+                    soundIconOn.style.display = 'none';
+                    soundIconOff.style.display = 'block';
+                    stopBackgroundMusic();
+                }
+            });
+            
+            // Iniciar trilha de fundo ao carregar (se habilitado)
+            startBackgroundMusic();
+            
+            // Expor funções globalmente para uso no wheels.js
+            window.playWheelSound = playWheelSound;
+            window.stopWheelSound = stopWheelSound;
+            window.playCelebrationSound = playCelebrationSound;
         
         /**
          * Atualiza o conteúdo do modal baseado no número de roletas
@@ -96,22 +195,22 @@
                 label.setAttribute('for', 'entriesTextarea0');
                 label.textContent = 'Digite a premiação (uma por linha):';
                 
-                const textarea = document.createElement('textarea');
-                textarea.id = 'entriesTextarea0';
-                textarea.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
-                textarea.value = wheelManager.getWheel(0).options.join('\n');
-                
-                const info = document.createElement('div');
-                info.className = 'entries-info';
-                info.id = 'entriesInfo0';
-                info.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
-                
-                textarea.addEventListener('input', () => {
-                    const text = textarea.value.trim();
-                    const lines = text.split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0);
-                    wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Prêmio 1']);
+                        const textarea = document.createElement('textarea');
+                        textarea.id = 'entriesTextarea0';
+                        textarea.placeholder = 'Ganhador 1\nGanhador 2\nGanhador 3\n...';
+                        textarea.value = wheelManager.getWheel(0).options.join('\n');
+                        
+                        const info = document.createElement('div');
+                        info.className = 'entries-info';
+                        info.id = 'entriesInfo0';
+                        info.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                        
+                        textarea.addEventListener('input', () => {
+                            const text = textarea.value.trim();
+                            const lines = text.split('\n')
+                                .map(line => line.trim())
+                                .filter(line => line.length > 0);
+                            wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Ganhador 1']);
                     info.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
                 });
                 
@@ -126,21 +225,21 @@
                 const label1 = document.createElement('label');
                 label1.setAttribute('for', 'entriesTextarea0');
                 label1.textContent = 'Roleta 1 - Digite a premiação (uma por linha):';
-                const textarea1 = document.createElement('textarea');
-                textarea1.id = 'entriesTextarea0';
-                textarea1.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
-                textarea1.value = wheelManager.getWheel(0).options.join('\n');
-                const info1 = document.createElement('div');
-                info1.className = 'entries-info';
-                info1.id = 'entriesInfo0';
-                info1.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
-                
-                textarea1.addEventListener('input', () => {
-                    const text = textarea1.value.trim();
-                    const lines = text.split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0);
-                    wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Prêmio 1']);
+                        const textarea1 = document.createElement('textarea');
+                        textarea1.id = 'entriesTextarea0';
+                        textarea1.placeholder = 'Ganhador 1\nGanhador 2\nGanhador 3\n...';
+                        textarea1.value = wheelManager.getWheel(0).options.join('\n');
+                        const info1 = document.createElement('div');
+                        info1.className = 'entries-info';
+                        info1.id = 'entriesInfo0';
+                        info1.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                        
+                        textarea1.addEventListener('input', () => {
+                            const text = textarea1.value.trim();
+                            const lines = text.split('\n')
+                                .map(line => line.trim())
+                                .filter(line => line.length > 0);
+                            wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Ganhador 1']);
                     info1.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
                 });
                 
@@ -153,7 +252,7 @@
                 section2.className = 'wheel-options-section';
                 const label2 = document.createElement('label');
                 label2.setAttribute('for', 'entriesTextarea1');
-                label2.textContent = 'Roleta 2 - Digite a premiação (uma por linha):';
+                label2.textContent = 'Roleta 2 - Números do concurso (um por linha):';
                 const textarea2 = document.createElement('textarea');
                 textarea2.id = 'entriesTextarea1';
                 textarea2.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';

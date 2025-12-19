@@ -123,6 +123,49 @@ body {
     transform: scale(1.1);
 }
 
+/* Botão de Som */
+.sound-button {
+    position: fixed;
+    top: 170px; /* Logo abaixo do botão de adicionar (120px + 40px + 10px) */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.sound-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sound-button svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.sound-button:hover svg {
+    transform: scale(1.1);
+}
+
+.sound-button.disabled {
+    opacity: 0.5;
+}
+
+.sound-button.disabled svg {
+    color: #999;
+}
+
 /* ───────────────────────────────────────── */
 /* MODAL DE OPÇÕES (OCULTO POR PADRÃO) */
 /* ───────────────────────────────────────── */

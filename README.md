@@ -2,6 +2,10 @@
 
 Sistema de roleta interativa com suporte a múltiplas roletas simultâneas, efeitos visuais e gerenciamento de prêmios.
 
+## 📸 Preview
+
+![Preview da Aplicação](assets/print.png)
+
 ## 🛠️ Tecnologias
 
 - **HTML5** - Estrutura da aplicação
