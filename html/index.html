@@ -195,13 +195,70 @@
                 }
             });
             
-            // Botão de refresh
+            // Botão de refresh com confirmação
             refreshButton.addEventListener('click', () => {
-                wheelManager.resetAll();
-                updateModalContent();
-                // Mostrar botão de adicionar roleta novamente
-                addWheelButton.style.display = 'flex';
+                showResetConfirmation();
             });
+            
+            /**
+             * Mostra modal de confirmação para resetar a roleta
+             */
+            function showResetConfirmation() {
+                const confirmModal = document.createElement('div');
+                confirmModal.className = 'confirm-modal';
+                confirmModal.id = 'resetConfirmModal';
+                
+                const content = document.createElement('div');
+                content.className = 'confirm-modal-content';
+                
+                const title = document.createElement('h3');
+                title.textContent = 'Confirmar Reset';
+                
+                const message = document.createElement('p');
+                message.textContent = 'Deseja realmente resetar a roleta para o estado padrão? Esta ação não pode ser desfeita.';
+                
+                const buttons = document.createElement('div');
+                buttons.className = 'confirm-modal-buttons';
+                
+                const yesButton = document.createElement('button');
+                yesButton.className = 'confirm-yes-btn';
+                yesButton.textContent = 'Sim';
+                yesButton.addEventListener('click', () => {
+                    wheelManager.resetAll();
+                    updateModalContent();
+                    addWheelButton.style.display = 'flex';
+                    confirmModal.remove();
+                });
+                
+                const noButton = document.createElement('button');
+                noButton.className = 'confirm-no-btn';
+                noButton.textContent = 'Não';
+                noButton.addEventListener('click', () => {
+                    confirmModal.remove();
+                });
+                
+                buttons.appendChild(yesButton);
+                buttons.appendChild(noButton);
+                
+                content.appendChild(title);
+                content.appendChild(message);
+                content.appendChild(buttons);
+                confirmModal.appendChild(content);
+                
+                document.body.appendChild(confirmModal);
+                
+                // Animação de entrada
+                setTimeout(() => {
+                    confirmModal.classList.add('active');
+                }, 10);
+                
+                // Fechar ao clicar fora
+                confirmModal.addEventListener('click', (e) => {
+                    if (e.target === confirmModal) {
+                        confirmModal.remove();
+                    }
+                });
+            }
             
             // Menu hambúrguer
             hamburgerMenu.addEventListener('click', () => {

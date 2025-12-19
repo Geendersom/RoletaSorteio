@@ -2,7 +2,7 @@
  * SLOT MACHINE / CASSINO
  * Sistema de sorteio de números estilo cassino
  * 
- * Comunicação com a roleta via eventos/estado
+ * DESENVOLVIDO POR Geêndersom Araújo
  */
 
 class SlotMachine {

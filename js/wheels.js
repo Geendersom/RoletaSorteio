@@ -1,6 +1,7 @@
 /**
  * SISTEMA DE MÚLTIPLAS ROLETAS
  * Gerencia criação, atualização e controle de múltiplas roletas
+ * DESENVOLVIDO POR Geêndersom Araújo
  */
 
 // Funções utilitárias compartilhadas
@@ -242,10 +243,46 @@ class Wheel {
             text.setAttribute('font-family', 'Arial, sans-serif');
             text.setAttribute('class', 'wheel-segment-text');
             
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // ORIENTAÇÃO RADIAL: TODOS DE DENTRO PARA FORA
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // Regra: Base do texto no centro, topo na borda
+            // Todos os textos devem seguir o raio do segmento
+            // angleMid está em graus (0-360), começando do topo (0°)
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // ORIENTAÇÃO RADIAL: TODOS DE DENTRO PARA FORA
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // Regra absoluta: Base do texto no centro, topo na borda externa
+            // Todos os textos devem seguir o raio do segmento
+            
+            // Calcular rotação para alinhar ao raio
+            // angleMid está em graus (0-360), começando do topo (0°)
+            // Para alinhar ao raio, rotacionamos: angleMid - 90°
             let textRotation = angleMid - 90;
-            if (textRotation > 90 && textRotation < 270) {
+            
+            // Normalizar para o range 0-360
+            while (textRotation < 0) textRotation += 360;
+            while (textRotation >= 360) textRotation -= 360;
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // REGRA CRÍTICA: Inverter textos que ficariam de cabeça para baixo
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // Após alinhar ao raio (angleMid - 90°), textos na metade direita
+            // (textRotation entre 180° e 360°) precisam ser invertidos
+            // para manter a leitura de dentro para fora
+            // Textos na metade esquerda (0° a 180°) mantêm orientação original
+            const needsInversion = (textRotation >= 180 && textRotation < 360);
+            
+            // Aplicar inversão se necessário
+            if (needsInversion) {
                 textRotation = textRotation + 180;
+                // Normalizar novamente
+                while (textRotation >= 360) textRotation -= 360;
             }
+            
+            // Aplicar transformação
+            text.setAttribute('text-anchor', 'middle');
             text.setAttribute('transform', `rotate(${textRotation} ${textX} ${textY})`);
             
             const segmentColor = generateUniqueColor(index, numOptions);

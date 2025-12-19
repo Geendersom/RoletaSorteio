@@ -639,3 +639,94 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
 }
+
+/* ───────────────────────────────────────── */
+/* MODAL DE CONFIRMAÇÃO DE RESET */
+/* ───────────────────────────────────────── */
+.confirm-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.confirm-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirm-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.confirm-modal.active .confirm-modal-content {
+    transform: scale(1);
+}
+
+.confirm-modal-content h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.confirm-modal-content p {
+    margin: 0 0 25px 0;
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.confirm-modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.confirm-yes-btn,
+.confirm-no-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.confirm-yes-btn {
+    background: #ff4444;
+    color: white;
+}
+
+.confirm-yes-btn:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+}
+
+.confirm-no-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.confirm-no-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
