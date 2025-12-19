@@ -4,6 +4,11 @@
  * DESENVOLVIDO POR Geêndersom Araújo
  */
 
+// Garantir que o modo de cor padrão seja 'colorido' se não estiver definido
+if (typeof window !== 'undefined' && !window.wheelColorMode) {
+    window.wheelColorMode = 'colorido';
+}
+
 // Funções utilitárias compartilhadas
 function generateUniqueColor(index, total) {
     const hue = (index * 360) / total;
@@ -24,7 +29,17 @@ function generateUniqueColor(index, total) {
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+// Função para gerar cores alternadas (preto, vermelho e branco)
+function generateAlternateColor(index) {
+    const colors = ['#000000', '#FF0000', '#FFFFFF'];
+    return colors[index % 3];
+}
+
 function getTextColor(hexColor) {
+    // Se for branco, sempre usar texto preto
+    if (hexColor.toUpperCase() === '#FFFFFF' || hexColor.toUpperCase() === '#FFF') {
+        return '#000000';
+    }
     const r = parseInt(hexColor.slice(1, 3), 16);
     const g = parseInt(hexColor.slice(3, 5), 16);
     const b = parseInt(hexColor.slice(5, 7), 16);
@@ -43,8 +58,8 @@ class Wheel {
         this.container = container;
         // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
         this.options = id === 0 
-            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8']
-            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
+            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8', 'Ganhador 9']
+            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8', 'Prêmio 9'];
         this.currentRotation = 0;
         this.isSpinning = false;
         this.selectedPrizeIndex = null;
@@ -174,7 +189,8 @@ class Wheel {
             light.style.top = `calc(50% + ${y}px)`;
             light.style.transform = 'translate(-50%, -50%)';
             light.style.zIndex = '10';
-            light.style.animationDelay = `${i * 0.15}s`;
+            // Delay sequencial para criar efeito de onda girando (2s / 18 luzes = ~0.111s por luz)
+            light.style.animationDelay = `${i * (2 / numLights)}s`;
             
             this.wheelLightsElement.appendChild(light);
         }
@@ -182,6 +198,7 @@ class Wheel {
     
     createWheel() {
         console.log('createWheel chamado, wheelElement:', this.wheelElement);
+        console.log('Modo de cor atual em createWheel:', window.wheelColorMode);
         
         if (!this.wheelElement) {
             console.error('wheelElement não existe!');
@@ -219,9 +236,15 @@ class Wheel {
                 'Z'
             ].join(' ');
             
-            const uniqueColor = generateUniqueColor(index, numOptions);
+            // Usar modo alternado se estiver ativo, senão usar cores únicas
+            // Garantir que o modo padrão seja 'colorido' se não estiver definido
+            const currentMode = window.wheelColorMode || 'colorido';
+            const useAlternateColors = currentMode === 'alternate';
+            const segmentColor = useAlternateColors 
+                ? generateAlternateColor(index) 
+                : generateUniqueColor(index, numOptions);
             path.setAttribute('d', pathData);
-            path.setAttribute('fill', uniqueColor);
+            path.setAttribute('fill', segmentColor);
             path.setAttribute('class', 'wheel-segment-path');
             this.wheelElement.appendChild(path);
         });
@@ -231,7 +254,11 @@ class Wheel {
             const startAngle = index * angleStep;
             const angleMid = startAngle + (angleStep / 2);
             const middleRad = toRad(angleMid);
-            const textRadius = radius * 0.50;
+            // Ajustar textRadius para ficar mais próximo da borda quando há muitos segmentos
+            // Quanto mais segmentos, mais próximo da borda o texto deve ficar para melhor legibilidade
+            const baseRadius = 0.70; // Base de 70% do raio (mais próximo da borda)
+            const adjustmentFactor = Math.min(0.20, numOptions / 200); // Ajuste baseado no número de opções
+            const textRadius = radius * (baseRadius + adjustmentFactor);
             const textX = cx + textRadius * Math.cos(middleRad);
             const textY = cy + textRadius * Math.sin(middleRad);
             
@@ -240,7 +267,9 @@ class Wheel {
             text.setAttribute('y', textY);
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('dominant-baseline', 'middle');
-            const fontSize = Math.max(24, Math.min(32, 520 / (numOptions * 2.5)));
+            // Ajustar tamanho da fonte baseado no número de opções
+            // Com muitos segmentos, reduzir mais a fonte para caber melhor
+            const fontSize = Math.max(16, Math.min(32, 520 / (numOptions * 2.2)));
             text.setAttribute('font-size', fontSize);
             text.setAttribute('font-weight', '600');
             text.setAttribute('font-family', 'Arial, sans-serif');
@@ -288,7 +317,13 @@ class Wheel {
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('transform', `rotate(${textRotation} ${textX} ${textY})`);
             
-            const segmentColor = generateUniqueColor(index, numOptions);
+            // Usar modo alternado se estiver ativo, senão usar cores únicas
+            // Garantir que o modo padrão seja 'colorido' se não estiver definido
+            const currentMode = window.wheelColorMode || 'colorido';
+            const useAlternateColors = currentMode === 'alternate';
+            const segmentColor = useAlternateColors 
+                ? generateAlternateColor(index) 
+                : generateUniqueColor(index, numOptions);
             const textColor = getTextColor(segmentColor);
             text.setAttribute('fill', textColor);
             text.textContent = option;
@@ -477,8 +512,8 @@ class Wheel {
         this.currentRotation = 0;
         // Roleta 1 (id === 0) usa "Ganhador", roleta 2 (id === 1) usa "Prêmio"
         this.options = this.id === 0
-            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8']
-            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
+            ? ['Ganhador 1', 'Ganhador 2', 'Ganhador 3', 'Ganhador 4', 'Ganhador 5', 'Ganhador 6', 'Ganhador 7', 'Ganhador 8', 'Ganhador 9']
+            : ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8', 'Prêmio 9'];
         this.wheelFrameElement.style.cursor = 'pointer';
         this.wheelInnerElement.style.transition = 'none';
         this.wheelInnerElement.style.transform = 'rotate(0deg)';

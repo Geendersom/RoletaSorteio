@@ -50,6 +50,21 @@
         </svg>
     </button>
 
+    <!-- Botão de Paleta de Cores -->
+    <button class="color-palette-button" id="colorPaletteButton" aria-label="Alternar cores da roleta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Círculo externo da roleta -->
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <!-- Segmentos da roleta -->
+            <path d="M 12 12 L 12 2 A 10 10 0 0 1 19.5 5.5 Z" fill="currentColor" opacity="0.3"/>
+            <path d="M 12 12 L 19.5 5.5 A 10 10 0 0 1 19.5 18.5 Z" fill="currentColor" opacity="0.5"/>
+            <path d="M 12 12 L 19.5 18.5 A 10 10 0 0 1 4.5 18.5 Z" fill="currentColor" opacity="0.3"/>
+            <path d="M 12 12 L 4.5 18.5 A 10 10 0 0 1 4.5 5.5 Z" fill="currentColor" opacity="0.5"/>
+            <!-- Centro da roleta -->
+            <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        </svg>
+    </button>
+
     <!-- Modal/Drawer para opções -->
     <div class="options-modal" id="optionsModal">
         <div class="modal-content">
@@ -77,18 +92,26 @@
         // SISTEMA DE MÚLTIPLAS ROLETAS
         // ━━━━━━━━━━━━━━━━━━━━━━
         
+        // Definir modo de cor padrão ANTES de qualquer inicialização (colorido é o padrão)
+        window.wheelColorMode = 'colorido';
+        
         let wheelManager;
         
         // Aguardar DOM estar pronto
         function init() {
             console.log('Inicializando sistema de roletas...');
+            console.log('Modo de cor inicial:', window.wheelColorMode);
             console.log('mainContainer existe?', document.getElementById('mainContainer') !== null);
+            
+            // FORÇAR modo padrão como 'colorido' (garantir que não está como 'alternate')
+            window.wheelColorMode = 'colorido';
             
             // Inicializar gerenciador de roletas
             wheelManager = new WheelManager();
             
             console.log('WheelManager criado:', wheelManager);
             console.log('Número de roletas:', wheelManager.wheelCount);
+            console.log('Modo de cor após criar roletas:', window.wheelColorMode);
             
             // Elementos DOM
             const hamburgerMenu = document.getElementById('hamburgerMenu');
@@ -100,6 +123,29 @@
             const soundButton = document.getElementById('soundButton');
             const soundIconOn = document.getElementById('soundIconOn');
             const soundIconOff = document.getElementById('soundIconOff');
+            const colorPaletteButton = document.getElementById('colorPaletteButton');
+            
+            // Garantir que o botão não está ativo por padrão (modo colorido é o padrão)
+            colorPaletteButton.classList.remove('active');
+            
+            // Toggle de cores
+            colorPaletteButton.addEventListener('click', () => {
+                // Alternar entre modo alternado (preto, vermelho, branco) e colorido
+                if (window.wheelColorMode === 'alternate') {
+                    window.wheelColorMode = 'colorido';
+                    colorPaletteButton.classList.remove('active');
+                } else {
+                    window.wheelColorMode = 'alternate';
+                    colorPaletteButton.classList.add('active');
+                }
+                
+                // Recriar todas as roletas para aplicar o novo modo de cor
+                if (wheelManager && wheelManager.wheels) {
+                    wheelManager.wheels.forEach(wheel => {
+                        wheel.createWheel();
+                    });
+                }
+            });
             
             // ━━━━━━━━━━━━━━━━━━━━━━
             // SISTEMA DE SONS

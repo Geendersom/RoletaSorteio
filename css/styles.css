@@ -166,6 +166,50 @@ body {
     color: #999;
 }
 
+/* Botão de Paleta de Cores */
+.color-palette-button {
+    position: fixed;
+    top: 220px; /* Logo abaixo do botão de som (170px + 40px + 10px) */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.color-palette-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.color-palette-button svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.color-palette-button:hover svg {
+    transform: scale(1.1);
+}
+
+.color-palette-button.active {
+    background: #333;
+    border-color: #333;
+}
+
+.color-palette-button.active svg {
+    color: white;
+}
+
 /* ───────────────────────────────────────── */
 /* MODAL DE OPÇÕES (OCULTO POR PADRÃO) */
 /* ───────────────────────────────────────── */
@@ -366,6 +410,7 @@ body {
     box-shadow: 0 0 40px rgba(255, 215, 0, 0.7);
     position: relative;
     cursor: pointer;
+    border: 5px solid #000000;
 }
 
 .wheel-inner {
@@ -422,25 +467,86 @@ body {
     background: #ffd700;
     border-radius: 50%;
     box-shadow: 
-        0 0 25px #ffd700,
-        0 0 50px #ffd700,
-        0 0 75px rgba(255, 215, 0, 0.8),
-        inset 0 0 10px rgba(255, 255, 255, 0.9);
-    animation: blink 2s ease-in-out infinite;
-    filter: brightness(1.2) blur(4px);
+        0 0 40px #ffd700,
+        0 0 80px #ffd700,
+        0 0 120px rgba(255, 215, 0, 1),
+        0 0 160px rgba(255, 215, 0, 0.9),
+        inset 0 0 15px rgba(255, 255, 255, 1);
+    animation: lightSequence 2s ease-in-out infinite, fastBlink 8s linear infinite;
+    filter: brightness(1.5) blur(3px);
     will-change: opacity, filter;
     /* Garantir que o transform de posicionamento não seja sobrescrito */
     transform: translate(-50%, -50%);
+    opacity: 0.3;
 }
 
-@keyframes blink {
-    0%, 100% { 
-        opacity: 1;
-        filter: brightness(1.2) blur(4px);
+/* Animação sequencial: cada luz acende enquanto a anterior apaga (efeito de onda) */
+@keyframes lightSequence {
+    0% {
+        opacity: 0.3;
+        filter: brightness(1) blur(3px);
     }
-    50% { 
-        opacity: 0.6;
-        filter: brightness(0.8) blur(4px);
+    5% {
+        opacity: 1;
+        filter: brightness(1.8) blur(3px);
+    }
+    10% {
+        opacity: 0.3;
+        filter: brightness(1) blur(3px);
+    }
+    100% {
+        opacity: 0.3;
+        filter: brightness(1) blur(3px);
+    }
+}
+
+/* Animação de piscar rápido por 2 segundos a cada 8 segundos */
+@keyframes fastBlink {
+    /* Primeiros 6 segundos: animação normal (75% do ciclo) */
+    0%, 75% {
+        opacity: 1;
+        filter: brightness(1.5) blur(3px);
+    }
+    /* Últimos 2 segundos (75% a 100%): piscar rápido */
+    75%, 77.5% {
+        opacity: 0.2;
+        filter: brightness(2.5) blur(2px);
+    }
+    80% {
+        opacity: 1;
+        filter: brightness(2) blur(3px);
+    }
+    82.5% {
+        opacity: 0.2;
+        filter: brightness(2.5) blur(2px);
+    }
+    85% {
+        opacity: 1;
+        filter: brightness(2) blur(3px);
+    }
+    87.5% {
+        opacity: 0.2;
+        filter: brightness(2.5) blur(2px);
+    }
+    90% {
+        opacity: 1;
+        filter: brightness(2) blur(3px);
+    }
+    92.5% {
+        opacity: 0.2;
+        filter: brightness(2.5) blur(2px);
+    }
+    95% {
+        opacity: 1;
+        filter: brightness(2) blur(3px);
+    }
+    97.5% {
+        opacity: 0.2;
+        filter: brightness(2.5) blur(2px);
+    }
+    100% {
+        opacity: 1;
+        filter: brightness(1.5) blur(3px);
     }
 }
 
