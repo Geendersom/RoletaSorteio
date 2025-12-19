@@ -327,17 +327,25 @@ class Wheel {
         const spins = 5 + Math.random() * 5;
         const randomAngle = Math.random() * 360;
         const totalRotation = spins * 360 + randomAngle;
-        const normalizedAngle = totalRotation % 360;
-        const selectedIndex = Math.floor((360 - normalizedAngle) / anglePerSection) % numOptions;
-        const adjustedRotation = totalRotation - (normalizedAngle % anglePerSection) + (anglePerSection / 2);
         
-        this.currentRotation += adjustedRotation;
+        // Calcular a rotação ajustada para centralizar no meio do segmento
+        const normalizedAngle = totalRotation % 360;
+        const segmentOffset = normalizedAngle % anglePerSection;
+        const adjustedRotation = totalRotation - segmentOffset + (anglePerSection / 2);
+        
+        // Calcular a rotação final total (incluindo rotação atual acumulada)
+        const newRotation = this.currentRotation + adjustedRotation;
+        
+        this.currentRotation = newRotation;
         
         this.wheelInnerElement.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
         this.wheelInnerElement.style.transform = `rotate(${this.currentRotation}deg)`;
         
         setTimeout(() => {
+            // Normalizar a rotação para 0-360
             this.currentRotation = this.currentRotation % 360;
+            if (this.currentRotation < 0) this.currentRotation += 360;
+            
             this.wheelInnerElement.style.transition = 'none';
             this.wheelInnerElement.style.transform = `rotate(${this.currentRotation}deg)`;
             this.isSpinning = false;
@@ -347,6 +355,35 @@ class Wheel {
             if (window.stopWheelSound) {
                 window.stopWheelSound();
             }
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // CÁLCULO CORRETO DO ÍNDICE SELECIONADO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // A seta está fixa no topo (0°)
+            // A roleta gira no sentido horário (positivo)
+            // Quando a roleta gira X graus, o que estava no topo agora está em X graus
+            // Mas a seta ainda aponta para o topo (0°), então ela aponta para o que estava em -X graus
+            // 
+            // Exemplo: Se a roleta girou 45°, o segmento que estava em 0° agora está em 45°
+            // A seta (fixa no topo) agora aponta para o que estava em -45° (ou 315°)
+            //
+            // Fórmula: Se a rotação final é R, a seta aponta para o segmento que estava em -R
+            // Para converter para índice: (360 - R) / anglePerSection
+            // Mas precisamos considerar que os segmentos começam do topo (0°)
+            
+            const finalRotation = this.currentRotation;
+            
+            // Calcular qual segmento está alinhado com a seta (topo = 0°)
+            // Como a roleta gira no sentido horário, precisamos inverter
+            let selectedIndex = Math.floor((360 - finalRotation) / anglePerSection);
+            
+            // Normalizar o índice para o range válido
+            selectedIndex = selectedIndex % numOptions;
+            if (selectedIndex < 0) selectedIndex += numOptions;
+            
+            // Garantir que está no range correto
+            if (selectedIndex >= numOptions) selectedIndex = selectedIndex % numOptions;
+            if (selectedIndex < 0) selectedIndex = 0;
             
             const selectedPrize = this.options[selectedIndex];
             this.selectedPrizeIndex = selectedIndex; // Armazenar o índice do prêmio selecionado
