@@ -1,0 +1,243 @@
+<!-- DESENVOLVIDO POR Geêndersom Araújo -->
+
+<!DOCTYPE html>
+<html lang="pt-BR" style="overflow: hidden; height: 100%;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spin the Wheel - Roleta Interativa</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- Biblioteca para efeito de confetes -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body style="overflow: hidden; height: 100vh; width: 100vw; position: fixed; top: 0; left: 0;">
+    <!-- Menu Hambúrguer -->
+    <button class="hamburger-menu" id="hamburgerMenu" aria-label="Abrir menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Botão de Refresh -->
+    <button class="refresh-button" id="refreshButton" aria-label="Resetar roleta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M3 21v-5h5"></path>
+        </svg>
+    </button>
+
+    <!-- Botão de Adicionar Roleta -->
+    <button class="add-wheel-button" id="addWheelButton" aria-label="Adicionar segunda roleta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+
+    <!-- Modal/Drawer para opções -->
+    <div class="options-modal" id="optionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Opções de Prêmios</h2>
+                <button class="close-modal" id="closeModal" aria-label="Fechar">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo será gerado dinamicamente baseado no número de roletas -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container - Roletas -->
+    <div class="main-container" id="mainContainer">
+        <!-- Divisor central (aparece apenas quando há duas roletas) -->
+        <div class="wheel-divider" id="wheelDivider" style="display: none;"></div>
+        <!-- Container das roletas será gerado dinamicamente -->
+    </div>
+
+    <!-- Sistema de Múltiplas Roletas -->
+    <script src="../js/wheels.js"></script>
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━
+        // SISTEMA DE MÚLTIPLAS ROLETAS
+        // ━━━━━━━━━━━━━━━━━━━━━━
+        
+        let wheelManager;
+        
+        // Aguardar DOM estar pronto
+        function init() {
+            console.log('Inicializando sistema de roletas...');
+            console.log('mainContainer existe?', document.getElementById('mainContainer') !== null);
+            
+            // Inicializar gerenciador de roletas
+            wheelManager = new WheelManager();
+            
+            console.log('WheelManager criado:', wheelManager);
+            console.log('Número de roletas:', wheelManager.wheelCount);
+            
+            // Elementos DOM
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const optionsModal = document.getElementById('optionsModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalBody = document.getElementById('modalBody');
+            const addWheelButton = document.getElementById('addWheelButton');
+            const refreshButton = document.getElementById('refreshButton');
+        
+        /**
+         * Atualiza o conteúdo do modal baseado no número de roletas
+         */
+        function updateModalContent() {
+            modalBody.innerHTML = '';
+            
+            if (wheelManager.wheelCount === 1) {
+                // Uma roleta - área única
+                const label = document.createElement('label');
+                label.setAttribute('for', 'entriesTextarea0');
+                label.textContent = 'Digite a premiação (uma por linha):';
+                
+                const textarea = document.createElement('textarea');
+                textarea.id = 'entriesTextarea0';
+                textarea.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
+                textarea.value = wheelManager.getWheel(0).options.join('\n');
+                
+                const info = document.createElement('div');
+                info.className = 'entries-info';
+                info.id = 'entriesInfo0';
+                info.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                
+                textarea.addEventListener('input', () => {
+                    const text = textarea.value.trim();
+                    const lines = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Prêmio 1']);
+                    info.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                });
+                
+                modalBody.appendChild(label);
+                modalBody.appendChild(textarea);
+                modalBody.appendChild(info);
+            } else {
+                // Duas roletas - duas áreas
+                // Roleta 1
+                const section1 = document.createElement('div');
+                section1.className = 'wheel-options-section';
+                const label1 = document.createElement('label');
+                label1.setAttribute('for', 'entriesTextarea0');
+                label1.textContent = 'Roleta 1 - Digite a premiação (uma por linha):';
+                const textarea1 = document.createElement('textarea');
+                textarea1.id = 'entriesTextarea0';
+                textarea1.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
+                textarea1.value = wheelManager.getWheel(0).options.join('\n');
+                const info1 = document.createElement('div');
+                info1.className = 'entries-info';
+                info1.id = 'entriesInfo0';
+                info1.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                
+                textarea1.addEventListener('input', () => {
+                    const text = textarea1.value.trim();
+                    const lines = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    wheelManager.getWheel(0).updateOptions(lines.length > 0 ? lines : ['Prêmio 1']);
+                    info1.textContent = `${wheelManager.getWheel(0).options.length} ${wheelManager.getWheel(0).options.length === 1 ? 'opção' : 'opções'}`;
+                });
+                
+                section1.appendChild(label1);
+                section1.appendChild(textarea1);
+                section1.appendChild(info1);
+                
+                // Roleta 2
+                const section2 = document.createElement('div');
+                section2.className = 'wheel-options-section';
+                const label2 = document.createElement('label');
+                label2.setAttribute('for', 'entriesTextarea1');
+                label2.textContent = 'Roleta 2 - Digite a premiação (uma por linha):';
+                const textarea2 = document.createElement('textarea');
+                textarea2.id = 'entriesTextarea1';
+                textarea2.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
+                textarea2.value = wheelManager.getWheel(1).options.join('\n');
+                const info2 = document.createElement('div');
+                info2.className = 'entries-info';
+                info2.id = 'entriesInfo1';
+                info2.textContent = `${wheelManager.getWheel(1).options.length} ${wheelManager.getWheel(1).options.length === 1 ? 'opção' : 'opções'}`;
+                
+                textarea2.addEventListener('input', () => {
+                    const text = textarea2.value.trim();
+                    const lines = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0);
+                    wheelManager.getWheel(1).updateOptions(lines.length > 0 ? lines : ['Prêmio 1']);
+                    info2.textContent = `${wheelManager.getWheel(1).options.length} ${wheelManager.getWheel(1).options.length === 1 ? 'opção' : 'opções'}`;
+                });
+                
+                section2.appendChild(label2);
+                section2.appendChild(textarea2);
+                section2.appendChild(info2);
+                
+                modalBody.appendChild(section1);
+                modalBody.appendChild(section2);
+            }
+        }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // EVENT LISTENERS
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            
+            // Botão de adicionar roleta
+            addWheelButton.addEventListener('click', () => {
+                wheelManager.addWheel();
+                updateModalContent();
+                // Ocultar botão quando houver 2 roletas
+                if (wheelManager.wheelCount >= 2) {
+                    addWheelButton.style.display = 'none';
+                }
+            });
+            
+            // Botão de refresh
+            refreshButton.addEventListener('click', () => {
+                wheelManager.resetAll();
+                updateModalContent();
+                // Mostrar botão de adicionar roleta novamente
+                addWheelButton.style.display = 'flex';
+            });
+            
+            // Menu hambúrguer
+            hamburgerMenu.addEventListener('click', () => {
+                updateModalContent();
+                optionsModal.classList.add('active');
+            });
+            
+            closeModal.addEventListener('click', () => {
+                optionsModal.classList.remove('active');
+            });
+            
+            // Fechar modal ao clicar fora
+            optionsModal.addEventListener('click', (e) => {
+                if (e.target === optionsModal) {
+                    optionsModal.classList.remove('active');
+                }
+            });
+
+            // Inicializar modal
+            updateModalContent();
+        }
+        
+        // Inicializar quando o DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM carregado, inicializando...');
+                init();
+            });
+        } else {
+            // DOM já está pronto
+            console.log('DOM já está pronto, inicializando...');
+            // Aguardar um pouco para garantir que tudo está renderizado
+            setTimeout(() => {
+                init();
+            }, 100);
+        }
+    </script>
+</body>
+</html>

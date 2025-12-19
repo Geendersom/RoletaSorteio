@@ -1,0 +1,641 @@
+/* DESENVOLVIDO POR Geêndersom Araújo */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    min-height: 100vh;
+    max-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* ───────────────────────────────────────── */
+/* MENU HAMBÚRGUER */
+/* ───────────────────────────────────────── */
+.hamburger-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.hamburger-menu:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.hamburger-menu span {
+    width: 24px;
+    height: 3px;
+    background: #333;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+/* BOTÃO REFRESH */
+.refresh-button {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.refresh-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.refresh-button svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.refresh-button:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Botão de Adicionar Roleta */
+.add-wheel-button {
+    position: fixed;
+    top: 120px; /* Logo abaixo do refresh (70px + 40px + 10px) */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.add-wheel-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.add-wheel-button svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.add-wheel-button:hover svg {
+    transform: scale(1.1);
+}
+
+/* ───────────────────────────────────────── */
+/* MODAL DE OPÇÕES (OCULTO POR PADRÃO) */
+/* ───────────────────────────────────────── */
+.options-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 2000;
+}
+
+.options-modal.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+.options-modal .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.options-modal.active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 1.8em;
+    color: #333;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+}
+
+.modal-body textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.entries-info {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Seções do modal quando há duas roletas */
+.wheel-options-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.wheel-options-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.wheel-options-section label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.wheel-options-section textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* Seções do modal quando há duas roletas */
+.wheel-options-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eee;
+}
+
+.wheel-options-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.wheel-options-section label {
+    display: block;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.wheel-options-section textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* ───────────────────────────────────────── */
+/* ROLETA */
+/* ───────────────────────────────────────── */
+.main-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Layout de duas roletas lado a lado */
+.main-container.two-wheels {
+    justify-content: space-around;
+    gap: 0;
+}
+
+/* Divisor central */
+.wheel-divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #ddd, transparent);
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.wheel-container {
+    width: min(80vw, 80vh, 700px);
+    height: min(80vw, 80vh, 700px);
+    position: relative;
+}
+
+.wheel-frame {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd700, #ffae00);
+    padding: 18px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.7);
+    position: relative;
+    cursor: pointer;
+}
+
+.wheel-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+}
+
+.wheel-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: #111;
+    border: 3px solid #ffd700;
+    border-radius: 50%;
+    z-index: 5;
+}
+
+/* SETA */
+.wheel-pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    z-index: 200;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 40px solid #ff0000;
+    z-index: 20;
+}
+
+/* LUZES */
+.wheel-lights {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.wheel-light {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: #ffd700;
+    border-radius: 50%;
+    box-shadow: 
+        0 0 25px #ffd700,
+        0 0 50px #ffd700,
+        0 0 75px rgba(255, 215, 0, 0.8),
+        inset 0 0 10px rgba(255, 255, 255, 0.9);
+    animation: blink 2s ease-in-out infinite;
+    filter: brightness(1.2) blur(4px);
+    will-change: opacity, filter;
+    /* Garantir que o transform de posicionamento não seja sobrescrito */
+    transform: translate(-50%, -50%);
+}
+
+@keyframes blink {
+    0%, 100% { 
+        opacity: 1;
+        filter: brightness(1.2) blur(4px);
+    }
+    50% { 
+        opacity: 0.6;
+        filter: brightness(0.8) blur(4px);
+    }
+}
+
+/* ───────────────────────────────────────── */
+/* MODAL CASSINO */
+/* ───────────────────────────────────────── */
+.casino-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease;
+    z-index: 9999;
+}
+
+.casino-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.casino-modal-content {
+    width: 90%;
+    max-width: 700px;
+    background: radial-gradient(circle at top, #220033, #000);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow:
+        0 0 40px rgba(255,0,255,.6),
+        0 0 80px rgba(0,255,255,.4);
+    animation: pop .4s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(.85); opacity: 0 }
+    to { transform: scale(1); opacity: 1 }
+}
+
+/* HEADER */
+.casino-prize-title {
+    text-align: center;
+    font-size: 36px;
+    color: #ffd700;
+    text-shadow: 0 0 20px #ffd700;
+    margin-bottom: 20px;
+}
+
+/* CONFIG */
+.casino-config {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.casino-config input {
+    width: 100px;
+    padding: 10px;
+    font-size: 18px;
+    text-align: center;
+    background: #000;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    border-radius: 8px;
+}
+
+/* SLOT */
+.casino-slot-area {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.casino-slot-container {
+    display: flex;
+    gap: 20px;
+    background: #000;
+    padding: 25px;
+    border-radius: 20px;
+    border: 2px solid #ff00ff;
+}
+
+.casino-slot-column {
+    width: 80px;
+    height: 180px;
+    overflow: hidden;
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+}
+
+.casino-slot-number {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    color: #ffd700;
+}
+
+/* BOTÃO INICIAR */
+.casino-start-button {
+    display: block;
+    margin: 20px auto;
+    padding: 15px 40px;
+    font-size: 22px;
+    font-weight: bold;
+    background: linear-gradient(135deg,#ff00ff,#00ffff);
+    border: 2px solid #ffd700;
+    color: #fff;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+/* RESULTADO */
+.casino-result-area {
+    text-align: center;
+}
+
+.casino-result-number {
+    font-size: 72px;
+    color: #ffd700;
+    text-shadow: 0 0 30px #ffd700;
+}
+
+.casino-result-number.blink {
+    opacity: .3;
+}
+
+.casino-refresh-button {
+    margin: 20px auto;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#ff00ff,#00ffff);
+    border: 2px solid #ffd700;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ───────────────────────────────────────── */
+/* OVERLAY DE PRÊMIO SELECIONADO */
+/* ───────────────────────────────────────── */
+.prize-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    border-radius: 50%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.prize-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.prize-overlay-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 90%;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 60;
+}
+
+.prize-overlay.active .prize-overlay-content {
+    transform: scale(1);
+}
+
+.prize-overlay-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+.prize-overlay-prize {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ff6b35;
+    margin: 20px 0 30px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #fff5f0, #ffe8e0);
+    border-radius: 12px;
+    border: 2px solid #ff6b35;
+}
+
+.prize-overlay-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.prize-overlay-remove-btn,
+.prize-overlay-close-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.prize-overlay-remove-btn {
+    background: #ff4444;
+    color: white;
+}
+
+.prize-overlay-remove-btn:hover {
+    background: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+}
+
+.prize-overlay-close-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.prize-overlay-close-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
