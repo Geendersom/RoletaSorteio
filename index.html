@@ -1,3 +1,5 @@
+<!-- DESENVOLVIDO POR Geêndersom Araújo -->
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -5,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spin the Wheel - Roleta Interativa</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Biblioteca para efeito de confetes -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <!-- Menu Hambúrguer -->
@@ -14,16 +18,26 @@
         <span></span>
     </button>
 
+    <!-- Botão de Refresh -->
+    <button class="refresh-button" id="refreshButton" aria-label="Resetar roleta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+            <path d="M21 3v5h-5"></path>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+            <path d="M3 21v-5h5"></path>
+        </svg>
+    </button>
+
     <!-- Modal/Drawer para opções -->
     <div class="options-modal" id="optionsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Opções da Roleta</h2>
+                <h2>Opções de Prêmios</h2>
                 <button class="close-modal" id="closeModal" aria-label="Fechar">×</button>
             </div>
             <div class="modal-body">
-                <label for="entriesTextarea">Digite os nomes (um por linha):</label>
-                <textarea id="entriesTextarea" placeholder="Choice 1&#10;Choice 2&#10;Choice 3&#10;..."></textarea>
+                <label for="entriesTextarea">Digite a premiação (uma por linha):</label>
+                <textarea id="entriesTextarea" placeholder="Prêmio 1&#10;Prêmio 2&#10;Prêmio 3&#10;..."></textarea>
                 <div class="entries-info" id="entriesInfo">0 opções</div>
             </div>
         </div>
@@ -53,7 +67,7 @@
 
     <script>
         // Lista de opções - cada nome = uma fatia
-        let options = ['Choice 1', 'Choice 2', 'Choice 3', 'Choice 4', 'Choice 5', 'Choice 6', 'Choice 7', 'Choice 8'];
+        let options = ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
         let isSpinning = false;
 
         const wheel = document.getElementById('wheel');
@@ -308,7 +322,7 @@
                 updateEntriesInfo();
             } else if (text === '') {
                 // Se o campo estiver vazio, manter pelo menos uma opção padrão
-                options = ['Choice 1'];
+                options = ['Prêmio 1'];
                 createWheel();
                 updateEntriesInfo();
             }
@@ -322,6 +336,88 @@
         }
 
         let currentRotation = 0;
+
+        /**
+         * Dispara efeito de confetes do centro da roleta quando ela para
+         * Efeito intenso e comemorativo, preenchendo a tela com confetes
+         */
+        function triggerConfetti() {
+            // Verificar se a biblioteca está disponível
+            if (typeof confetti === 'undefined') return;
+            
+            // Obter posição do centro da roleta
+            const wheelContainer = document.querySelector('.wheel-container');
+            if (!wheelContainer) return;
+            
+            const rect = wheelContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            // Converter coordenadas da tela para coordenadas do canvas (0-1)
+            const x = centerX / window.innerWidth;
+            const y = centerY / window.innerHeight;
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // CONFIGURAÇÃO DO EFEITO DE CONFETES INTENSO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // Múltiplas explosões para preencher mais a tela
+            const colors = ['#FF0000', '#FFD700', '#00FF00', '#0000FF', '#FF00FF', '#00FFFF', '#FFA500', '#FF1493', '#32CD32', '#FF69B4', '#00CED1', '#FF6347'];
+            
+            // Explosão principal - muito mais confetes
+            confetti({
+                particleCount: 400, // Quantidade muito maior de confetes
+                angle: 90, // Ângulo inicial (vertical para cima)
+                spread: 360, // Espalhamento completo (360 graus - todas as direções)
+                origin: { x: x, y: y }, // Origem no centro da roleta
+                colors: colors,
+                shapes: ['square', 'circle'], // Formas simples (quadrados e círculos)
+                gravity: 0.5, // Gravidade reduzida para confetes voarem mais longe
+                ticks: 200, // Duração maior: ~2 segundos
+                decay: 0.94, // Decaimento mais lento
+                startVelocity: 45, // Velocidade inicial muito maior para espalhar mais
+                drift: 0.2, // Pequena deriva para movimento mais natural
+                scalar: 1.3, // Tamanho dos confetes um pouco maior
+                zIndex: 9999
+            });
+            
+            // Explosão secundária com pequeno delay para efeito em camadas
+            setTimeout(() => {
+                confetti({
+                    particleCount: 250,
+                    angle: 90,
+                    spread: 360,
+                    origin: { x: x, y: y },
+                    colors: colors,
+                    shapes: ['square', 'circle'],
+                    gravity: 0.4,
+                    ticks: 180,
+                    decay: 0.93,
+                    startVelocity: 40,
+                    drift: 0.15,
+                    scalar: 1.2,
+                    zIndex: 9999
+                });
+            }, 100);
+            
+            // Explosão terciária para preencher ainda mais
+            setTimeout(() => {
+                confetti({
+                    particleCount: 200,
+                    angle: 90,
+                    spread: 360,
+                    origin: { x: x, y: y },
+                    colors: colors,
+                    shapes: ['square', 'circle'],
+                    gravity: 0.45,
+                    ticks: 170,
+                    decay: 0.92,
+                    startVelocity: 35,
+                    drift: 0.25,
+                    scalar: 1.1,
+                    zIndex: 9999
+                });
+            }, 200);
+        }
 
         function spinWheel() {
             if (isSpinning) return;
@@ -358,6 +454,11 @@
                 wheelInner.style.transform = `rotate(${currentRotation}deg)`;
                 isSpinning = false;
                 wheelFrame.style.cursor = 'pointer';
+                
+                // ━━━━━━━━━━━━━━━━━━━━━━
+                // EFEITO DE CONFETES AO FINALIZAR O GIRO
+                // ━━━━━━━━━━━━━━━━━━━━━━
+                triggerConfetti();
             }, 4000);
         }
 
@@ -385,6 +486,58 @@
                 optionsModal.classList.remove('active');
             }
         });
+
+        /**
+         * Reseta a roleta para o estado inicial
+         */
+        function resetWheel() {
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // PARAR QUALQUER ANIMAÇÃO EM ANDAMENTO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            isSpinning = false;
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // RESETAR ROTAÇÃO PARA ZERO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            currentRotation = 0;
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // LIMPAR TODAS AS OPÇÕES E VOLTAR AO ESTADO PADRÃO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            options = ['Prêmio 1', 'Prêmio 2', 'Prêmio 3', 'Prêmio 4', 'Prêmio 5', 'Prêmio 6', 'Prêmio 7', 'Prêmio 8'];
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // LIMPAR O TEXTAREA
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            entriesTextarea.value = options.join('\n');
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // RESETAR CURSOR E TRANSIÇÕES DA ROLETA
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            const wheelFrame = document.querySelector('.wheel-frame');
+            const wheelInner = document.querySelector('.wheel-inner');
+            
+            if (wheelFrame) {
+                wheelFrame.style.cursor = 'pointer';
+            }
+            
+            if (wheelInner) {
+                // Parar qualquer animação CSS em andamento
+                wheelInner.style.transition = 'none';
+                // Resetar imediatamente para 0 graus
+                wheelInner.style.transform = 'rotate(0deg)';
+            }
+            
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            // RECRIAR A ROLETA COM ESTADO PADRÃO
+            // ━━━━━━━━━━━━━━━━━━━━━━
+            createWheel();
+            updateEntriesInfo();
+        }
+
+        // Botão de refresh
+        const refreshButton = document.getElementById('refreshButton');
+        refreshButton.addEventListener('click', resetWheel);
 
         // Inicialização
         entriesTextarea.value = options.join('\n');

@@ -1,3 +1,5 @@
+/* DESENVOLVIDO POR Geêndersom Araújo */
+
 * {
     margin: 0;
     padding: 0;
@@ -48,6 +50,42 @@ body {
     background: #333;
     border-radius: 2px;
     transition: all 0.3s;
+}
+
+/* Botão de Refresh */
+.refresh-button {
+    position: fixed;
+    top: 70px; /* Logo abaixo do hambúrguer (20px + 40px + 10px de espaçamento) */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.refresh-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.refresh-button svg {
+    width: 20px;
+    height: 20px;
+    color: #333;
+    transition: transform 0.3s ease;
+}
+
+.refresh-button:hover svg {
+    transform: rotate(180deg);
 }
 
 /* Modal/Drawer para opções */
@@ -306,17 +344,20 @@ body {
 /* Seta simples e limpa - sem sombras ou glow (como na roleta 2) */
 .wheel-pointer {
     position: absolute;
-    top: 50%;
-    right: -10px;
-    transform: translateY(-50%);
+    top: -20px; /* Posicionado no topo, acima da roleta */
+    left: 50%; /* Centralizado horizontalmente */
+    transform: translateX(-50%); /* Centralização perfeita */
     width: 0;
     height: 0;
-    border-top: 16px solid transparent;
-    border-bottom: 16px solid transparent;
-    border-left: 24px solid #FFD700;
+    /* Triângulo apontando para baixo (em direção ao centro) */
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 40px solid #FF0000; /* Vermelho vivo */
     z-index: 15;
     pointer-events: none;
-    /* Sem sombras, sem glow - apenas a forma simples */
+    /* Sem sombras, sem glow, sem gradiente, sem animação - apenas forma simples */
+    filter: none;
+    box-shadow: none;
 }
 
 
