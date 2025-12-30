@@ -53,10 +53,45 @@ body {
     transition: all 0.3s;
 }
 
+/* BOTÃO DE MISTURAR CONTEÚDOS */
+.shuffle-button {
+    position: fixed;
+    top: 70px; /* Logo abaixo do menu hambúrguer (20px + 40px + 10px) */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.shuffle-button:hover {
+    background: #f8f8f8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.shuffle-button img {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+.shuffle-button:hover img {
+    transform: scale(1.1);
+}
+
 /* BOTÃO REFRESH */
 .refresh-button {
     position: fixed;
-    top: 70px;
+    top: 120px; /* Logo abaixo do botão de misturar (70px + 40px + 10px) */
     right: 20px;
     width: 40px;
     height: 40px;
@@ -91,7 +126,7 @@ body {
 /* Botão de Adicionar Roleta */
 .add-wheel-button {
     position: fixed;
-    top: 120px; /* Logo abaixo do refresh (70px + 40px + 10px) */
+    top: 170px; /* Logo abaixo do refresh (120px + 40px + 10px) */
     right: 20px;
     width: 40px;
     height: 40px;
@@ -126,7 +161,7 @@ body {
 /* Botão de Som */
 .sound-button {
     position: fixed;
-    top: 170px; /* Logo abaixo do botão de adicionar (120px + 40px + 10px) */
+    top: 220px; /* Logo abaixo do botão de adicionar (170px + 40px + 10px) */
     right: 20px;
     transition: top 0.3s ease;
     width: 40px;
@@ -170,7 +205,7 @@ body {
 /* Botão de Paleta de Cores */
 .color-palette-button {
     position: fixed;
-    top: 220px; /* Logo abaixo do botão de som (170px + 40px + 10px) */
+    top: 270px; /* Logo abaixo do botão de som (220px + 40px + 10px) */
     right: 20px;
     transition: top 0.3s ease;
     width: 40px;

@@ -19,6 +19,11 @@
         <span></span>
     </button>
 
+    <!-- Botão de Misturar Conteúdos -->
+    <button class="shuffle-button" id="shuffleButton" aria-label="Misturar conteúdos">
+        <img src="../assets/botao.png" alt="Misturar conteúdos">
+    </button>
+
     <!-- Botão de Refresh -->
     <button class="refresh-button" id="refreshButton" aria-label="Resetar roleta">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -120,6 +125,7 @@
             const modalBody = document.getElementById('modalBody');
             const addWheelButton = document.getElementById('addWheelButton');
             const refreshButton = document.getElementById('refreshButton');
+            const shuffleButton = document.getElementById('shuffleButton');
             const soundButton = document.getElementById('soundButton');
             const soundIconOn = document.getElementById('soundIconOn');
             const soundIconOff = document.getElementById('soundIconOff');
@@ -330,19 +336,38 @@
             // EVENT LISTENERS
             // ━━━━━━━━━━━━━━━━━━━━━━
             
+            // Função para embaralhar os conteúdos das roletas (mantém as cores)
+            function shuffleWheelContents() {
+                if (wheelManager && wheelManager.wheels) {
+                    wheelManager.wheels.forEach(wheel => {
+                        // Criar uma cópia do array de opções
+                        const shuffledOptions = [...wheel.options];
+                        
+                        // Algoritmo Fisher-Yates para embaralhar
+                        for (let i = shuffledOptions.length - 1; i > 0; i--) {
+                            const j = Math.floor(Math.random() * (i + 1));
+                            [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+                        }
+                        
+                        // Atualizar as opções com a ordem embaralhada
+                        wheel.updateOptions(shuffledOptions);
+                    });
+                }
+            }
+            
             // Função para reposicionar botões quando o botão de adicionar roleta é ocultado
             function repositionButtons() {
                 const buttonSpacing = 50; // Espaçamento entre botões (40px altura + 10px gap)
-                const startTop = 70; // Posição inicial do refresh button
+                const refreshTop = 120; // Posição do refresh button
                 
                 if (addWheelButton.style.display === 'none') {
                     // Botão de adicionar está oculto, reposicionar os outros
-                    soundButton.style.top = `${startTop + buttonSpacing}px`;
-                    colorPaletteButton.style.top = `${startTop + (buttonSpacing * 2)}px`;
+                    soundButton.style.top = `${refreshTop + buttonSpacing}px`;
+                    colorPaletteButton.style.top = `${refreshTop + (buttonSpacing * 2)}px`;
                 } else {
                     // Botão de adicionar está visível, voltar às posições originais
-                    soundButton.style.top = `${startTop + (buttonSpacing * 2)}px`;
-                    colorPaletteButton.style.top = `${startTop + (buttonSpacing * 3)}px`;
+                    soundButton.style.top = `${refreshTop + (buttonSpacing * 2)}px`;
+                    colorPaletteButton.style.top = `${refreshTop + (buttonSpacing * 3)}px`;
                 }
             }
             
@@ -355,6 +380,11 @@
                     addWheelButton.style.display = 'none';
                     repositionButtons();
                 }
+            });
+            
+            // Botão de misturar conteúdos
+            shuffleButton.addEventListener('click', () => {
+                shuffleWheelContents();
             });
             
             // Botão de refresh com confirmação
