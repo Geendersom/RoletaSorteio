@@ -330,6 +330,22 @@
             // EVENT LISTENERS
             // ━━━━━━━━━━━━━━━━━━━━━━
             
+            // Função para reposicionar botões quando o botão de adicionar roleta é ocultado
+            function repositionButtons() {
+                const buttonSpacing = 50; // Espaçamento entre botões (40px altura + 10px gap)
+                const startTop = 70; // Posição inicial do refresh button
+                
+                if (addWheelButton.style.display === 'none') {
+                    // Botão de adicionar está oculto, reposicionar os outros
+                    soundButton.style.top = `${startTop + buttonSpacing}px`;
+                    colorPaletteButton.style.top = `${startTop + (buttonSpacing * 2)}px`;
+                } else {
+                    // Botão de adicionar está visível, voltar às posições originais
+                    soundButton.style.top = `${startTop + (buttonSpacing * 2)}px`;
+                    colorPaletteButton.style.top = `${startTop + (buttonSpacing * 3)}px`;
+                }
+            }
+            
             // Botão de adicionar roleta
             addWheelButton.addEventListener('click', () => {
                 wheelManager.addWheel();
@@ -337,6 +353,7 @@
                 // Ocultar botão quando houver 2 roletas
                 if (wheelManager.wheelCount >= 2) {
                     addWheelButton.style.display = 'none';
+                    repositionButtons();
                 }
             });
             
@@ -372,6 +389,7 @@
                     wheelManager.resetAll();
                     updateModalContent();
                     addWheelButton.style.display = 'flex';
+                    repositionButtons();
                     confirmModal.remove();
                 });
                 
