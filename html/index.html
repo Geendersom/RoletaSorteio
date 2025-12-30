@@ -270,13 +270,16 @@
                 modalBody.appendChild(textarea);
                 modalBody.appendChild(info);
             } else {
+
                 // Duas roletas - duas áreas
+                
                 // Roleta 1
                 const section1 = document.createElement('div');
                 section1.className = 'wheel-options-section';
                 const label1 = document.createElement('label');
                 label1.setAttribute('for', 'entriesTextarea0');
-                label1.textContent = 'Roleta 1 - Digite a premiação (uma por linha):';
+                // label1.textContent = 'Roleta 1 - Digite a premiação (uma por linha):';
+                label1.textContent = 'Roleta 1 - Números do concurso (um por linha):';
                         const textarea1 = document.createElement('textarea');
                         textarea1.id = 'entriesTextarea0';
                         textarea1.placeholder = 'Ganhador 1\nGanhador 2\nGanhador 3\n...';
@@ -304,7 +307,7 @@
                 section2.className = 'wheel-options-section';
                 const label2 = document.createElement('label');
                 label2.setAttribute('for', 'entriesTextarea1');
-                label2.textContent = 'Roleta 2 - Números do concurso (um por linha):';
+                label2.textContent = 'Roleta 2 - Digite a premiação (uma por linha):';
                 const textarea2 = document.createElement('textarea');
                 textarea2.id = 'entriesTextarea1';
                 textarea2.placeholder = 'Prêmio 1\nPrêmio 2\nPrêmio 3\n...';
